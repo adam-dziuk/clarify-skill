@@ -1,0 +1,13 @@
+{
+  "name": "clarify-skill",
+  "owner": { "name": "Adam Dziuk", "email": "adam.dziuk@ddsystems.pl" },
+  "description": "Claude Code plugins for making website copy easier to understand.",
+  "plugins": [
+    {
+      "name": "clarify-skill",
+      "source": "./",
+      "description": "Simplifies the main content of a website into plain language, editing the source files in place while keeping names, facts, SEO key phrases and tone intact.",
+      "category": "writing"
+    }
+  ]
+}

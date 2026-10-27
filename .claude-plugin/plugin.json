@@ -1,0 +1,10 @@
+{
+  "name": "clarify-skill",
+  "description": "Rewrites a website's visitor-facing content into plain language (CEFR B1) directly in its source files, in any language and across all language versions.",
+  "version": "0.1.0",
+  "author": { "name": "Adam Dziuk", "email": "adam.dziuk@ddsystems.pl" },
+  "homepage": "https://github.com/adam-dziuk/clarify-skill",
+  "repository": "https://github.com/adam-dziuk/clarify-skill",
+  "license": "MIT",
+  "keywords": ["plain-language", "copywriting", "readability", "accessibility", "website", "i18n"]
+}
