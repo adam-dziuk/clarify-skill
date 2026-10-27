@@ -16,7 +16,7 @@ Picture the reader: a busy adult who is not an expert in this field, is probably
 **Leave alone**, even inside files you are editing:
 
 - **UI microcopy** — buttons, navigation and footer links, form labels, placeholders and help text, validation and error messages, notifications, empty states, cookie banners.
-- **Metadata and accessibility attributes** — `<title>`, meta description, Open Graph tags, `alt`, `aria-*`, `title` attributes.
+- **Metadata and accessibility attributes** — `<title>`, meta description, Open Graph tags, `alt`, `aria-*`, `title` attributes, and SEO-only front matter fields.
 - **Legal text** — terms of service, privacy and cookie policies, consent clauses under forms, regulatory disclosures. Rewording a clause can change what it means legally.
 - **Quotes and testimonials** — these are words attributed to real people.
 - **Code, code comments, admin screens, transactional emails.**
@@ -27,7 +27,9 @@ If the user explicitly asks you to include one of these, do it. For legal text, 
 
 ### 1. Find where the text lives
 
-Look at the project structure before touching anything. Copy can sit in:
+Look at the project structure before touching anything. If the user gave a URL, map its path to the route that serves it — router config, a `pages` or `app` directory, a map of localized slugs. If that isn't obvious, grep the codebase for a distinctive sentence from the page. Don't take the text from the live site: it may differ from what's in the repo.
+
+Copy can sit in:
 
 - markup and templates: `.html`, `.blade.php`, `.twig`, `.erb`, `.liquid`, `.hbs`, `.njk`, `.astro`
 - components: `.jsx`, `.tsx`, `.vue`, `.svelte`
@@ -35,6 +37,8 @@ Look at the project structure before touching anything. Copy can sit in:
 - translation files: `lang/<locale>/*.php`, `lang/<locale>.json`, `locales/*.json`, `messages/*.json`, `i18n/*.yml`, `*.po`
 
 When a component renders translation keys (`t('home.hero.title')`, `$t(...)`, `{{ 'key'|trans }}`, `__('...')`), the text lives in the translation files — edit those, not the component. Framework files such as Laravel's `validation.php`, `auth.php`, `pagination.php` and `passwords.php` are microcopy; skip them.
+
+**Front matter** mixes content and metadata. Simplify fields that render as visible text — a `title` shown as the H1, an `excerpt`, `lead` or `summary` shown on cards. Leave `slug`, ids, dates, image paths, alt-text fields and SEO-only fields such as `seoTitle` or `metaDescription`. If a field feeds both the page and a meta tag (often `description`), check the template: if it shows on the page, treat it as content and apply the SEO key-phrase rule to it.
 
 Every language version gets simplified. Note which locales exist so you can cover all of them.
 
@@ -46,9 +50,11 @@ Every language version gets simplified. Note which locales exist so you can cove
 
 If the key is built dynamically or is used in more places than you can safely check, stop and ask the user instead of guessing.
 
+**When the text isn't in the code.** If the page content comes from a CMS or a database (WordPress, a headless CMS, seeded records), tell the user. Offer the rewrite as a before → after list in the step 6 format, which they can paste into the CMS. Edit seeders or fixtures only if the user confirms that's where the live content comes from.
+
 ### 2. Agree on scope
 
-If the user named pages or files, work on those. If they didn't, don't start on the whole site — a sitewide rewrite gives a diff too big to review. Instead, make an inventory of the public pages (route or URL → source files, roughly how much text each has, which locales exist) and ask which ones to do. Use AskUserQuestion with `multiSelect` if it's available, and recommend starting with the homepage and the pages with the most text.
+If the user named pages or files, work on those. If they didn't, don't start on the whole site — a sitewide rewrite gives a diff too big to review. Instead, make an inventory of the public pages (route or URL → source files, roughly how much text each has, which locales exist) and ask which ones to do. Use AskUserQuestion with `multiSelect` if it's available; otherwise list the pages in your reply and wait for the user's choice before editing. Recommend starting with the homepage and the pages with the most text.
 
 Check `git status` before editing. If the project isn't under git, or the files you're about to change have uncommitted edits, tell the user: the diff is how they will review and, if needed, revert your work, and mixing your changes with theirs makes that hard. Don't commit unless asked.
 
@@ -63,6 +69,7 @@ Read the page — including the partials and components it pulls in — before c
   - every fact — prices, dates, opening hours, phone numbers, emails, addresses, quantities, specs, percentages, durations;
   - SEO key phrases — the main phrase in each H1 and H2. A good hint is a phrase that also appears in the `<title>`, the meta description or the URL slug. If you can't tell which part of a heading is the key phrase, leave the heading as it is.
 - **Notes left next to the text.** Code comments beside a string often record a decision: a length limit, a word that has to agree grammatically with another, an SEO choice, a call the owner made. Treat these as constraints. If a simpler version would break one, leave that string alone and mention it under "Please check".
+- **Text shared with other pages.** Before you edit a translation key, partial or component, grep for where else it's used. If it also appears on pages outside the agreed scope, leave it as it is and list it under "Please check", or ask the user whether to include those pages.
 
 ### 4. Rewrite
 
@@ -95,6 +102,7 @@ Change only the text, never the structure:
 
 - **Keep every tag, attribute, class, link and inline element.** If the sentence has a link or `<strong>`, the new sentence keeps that element around the matching words. Don't merge or split paragraphs or elements. Splitting a long sentence into two inside the same element is fine.
 - **Keep template syntax and placeholders exactly as they are**: `{{ $var }}`, `{!! ... !!}`, `{name}`, `:attribute`, `%s`, `{{count}}`, ICU `{count, plural, ...}` and Laravel pluralisation `"one|many"` / `"{0} ...|[1,*] ..."`, including every plural branch.
+- **Keep tags inside translation strings**: rich-text tags such as `<0>…</0>` (react-i18next `Trans`), `<b>…</b>` or `<link>…</link>` (next-intl `t.rich`), and raw HTML in strings rendered with `set:html`, `v-html`, `dangerouslySetInnerHTML` or `{!! !!}`. Treat them like inline elements in markup: each tag stays around the matching words.
 - **Respect the file's escaping**: quotes inside JSON, PHP and JS strings, apostrophes in JSX text (`&apos;` or `{"'"}`), HTML entities, YAML quoting.
 - **Keep the site's typographic conventions.** If it puts `&nbsp;` after single-letter words (common in Polish: `w&nbsp;`, `z&nbsp;`) or uses particular quote and dash styles, use them in your new text too.
 - **Make exact, local replacements** with Edit. Don't reformat, re-indent or run formatters on the files.
